@@ -1,5 +1,15 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    <h1>All Posts</h1>
+    {% for post in posts %}
+        <div class="card">
+            <h4><strong>@{{post.user.username}}</strong></h4>
+            <h6>{{post.content}}</h6>
+            <h5>{{post.likes.count}}</h5>
+            <p>{{post.created_at}}</p>
+        </div>
+    {% empty %}
+        <h5>No posts</h5>
+    {% endfor %}
 {% endblock %}

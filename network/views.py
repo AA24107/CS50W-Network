@@ -9,9 +9,10 @@ from .models import User, Post
 
 
 def index(request):
-    post = Post.objects.filter(id=1).first()
-    print(post.created_at)
-    return render(request, "network/index.html")
+    posts = Post.objects.all().order_by("-created_at")
+    return render(request, "network/index.html", {
+        "posts": posts,
+    })
 
 
 def login_view(request):
