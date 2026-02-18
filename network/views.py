@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
@@ -14,14 +14,31 @@ def index(request):
         "posts": posts,
     })
 
+def following(request):
+    followed = request.user.following.all()
+    posts = Post.objects.filter(user__in = followed).order_by("-created_at")
+
+    return render(request, "network/index.html", {
+        "posts": posts,
+    })
+
 def profile(request, username):
-    profile = User.objects.get(username= username)
-    posts = Post.objects.filter(user = profile).order_by("-created_at")
+    profile_user = User.objects.get(username = username)
+    if request.method == "POST":
+        if request.user.is_authenticated and request.user != profile_user:
+            if profile_user in request.user.following.all():
+                request.user.following.remove(profile_user)
+            else:
+                request.user.following.add(profile_user)
+
+        return redirect("profile", username=username)
+
+    posts = Post.objects.filter(user = profile_user).order_by("-created_at")
     is_following = False
-    if request.user.is_authenticated and request.user != profile:
-        is_following = profile.follower.filter(id=request.user.id).exists()
+    if request.user.is_authenticated and request.user != profile_user:
+        is_following = profile_user.follower.filter(id=request.user.id).exists()
     return render(request, "network/profile.html", {
-        "profile": profile,
+        "profile": profile_user,
         "posts": posts,
         "is_following": is_following
     })
