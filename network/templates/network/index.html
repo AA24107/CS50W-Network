@@ -3,10 +3,14 @@
 {% block body %}
     <h1>All Posts</h1>
     {% for post in posts %}
-        <div class="card">
-            <h4><strong>@{{post.user.username}}</strong></h4>
+        <div class="card mb-2 p-2">
+            <h4>
+                <a href="{% url 'profile' post.user.username %}">
+                    <strong>@{{ post.user.username }}</strong>
+                </a>
+            </h4>
             <h6>{{post.content}}</h6>
-            <h5>{{post.likes.count}}</h5>
+            <h5>{{post.likes.count}} likes</h5>
             <p>{{post.created_at}}</p>
         </div>
     {% empty %}

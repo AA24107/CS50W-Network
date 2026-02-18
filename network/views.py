@@ -14,10 +14,21 @@ def index(request):
         "posts": posts,
     })
 
+def profile(request, username):
+    profile = User.objects.get(username= username)
+    posts = Post.objects.filter(user = profile).order_by("-created_at")
+    is_following = False
+    if request.user.is_authenticated and request.user != profile:
+        is_following = profile.follower.filter(id=request.user.id).exists()
+    return render(request, "network/profile.html", {
+        "profile": profile,
+        "posts": posts,
+        "is_following": is_following
+    })
+
 
 def login_view(request):
     if request.method == "POST":
-
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]

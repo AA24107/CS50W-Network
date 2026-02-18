@@ -1,0 +1,31 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div class="card mb-2 p-2">
+        <h1>@{{profile.username}}</h1>
+        {% if profile != request.user %}
+            <form method="POST">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">
+                    {% if is_following %}
+                        Unfollow
+                    {% else %}
+                        Follow
+                    {% endif %}
+                </button>
+            </form>
+
+        {% endif %}
+        <hr>
+        <p>Following: {{user.following.count}}</p>
+        <p>Followers: {{user.follower.count}}</p>
+        {% for post in posts%}
+            <div class="card mb-2 p-2">
+                <h4><strong>@{{post.user.username}}</strong></h4> 
+                <h6>{{post.content}}</h6>
+                <h5>{{post.likes.count}} likes</h5>
+                <p>{{post.created_at}}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
