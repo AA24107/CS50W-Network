@@ -19,7 +19,7 @@
         <hr>
         <p>Following: {{profile.following.count}}</p>
         <p>Followers: {{profile.follower.count}}</p>
-        {% for post in posts%}
+        {% for post in page_obj%}
             <div class="card mb-2 p-2">
                 <h4><strong>@{{post.user.username}}</strong></h4> 
                 <h6>{{post.content}}</h6>
@@ -27,5 +27,18 @@
                 <p>{{post.created_at}}</p>
             </div>
         {% endfor %}
+    </div>
+        <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Previous </a>
+        {% endif %}
+
+        <span>
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"> Next</a>
+        {% endif %}
     </div>
 {% endblock %}

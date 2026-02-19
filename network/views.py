@@ -4,22 +4,31 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 from .models import User, Post
 
 
 def index(request):
     posts = Post.objects.all().order_by("-created_at")
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     return render(request, "network/index.html", {
-        "posts": posts,
+        "page_obj": page_obj,
+        "title": "All Posts",
     })
 
 def following(request):
     followed = request.user.following.all()
     posts = Post.objects.filter(user__in = followed).order_by("-created_at")
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     return render(request, "network/index.html", {
-        "posts": posts,
+        "page_obj": page_obj,
+        "title": "Following",
     })
 
 def profile(request, username):
@@ -34,12 +43,15 @@ def profile(request, username):
         return redirect("profile", username=username)
 
     posts = Post.objects.filter(user = profile_user).order_by("-created_at")
+    paginator = Paginator(posts, 5)  #change it to 10 later
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     is_following = False
     if request.user.is_authenticated and request.user != profile_user:
         is_following = profile_user.follower.filter(id=request.user.id).exists()
     return render(request, "network/profile.html", {
         "profile": profile_user,
-        "posts": posts,
+        "page_obj": page_obj,
         "is_following": is_following
     })
 

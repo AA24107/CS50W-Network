@@ -1,8 +1,8 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    <h1>All Posts</h1>
-    {% for post in posts %}
+    <h1>{{title}}</h1>
+    {% for post in page_obj %}
         <div class="card mb-2 p-2">
             <h4>
                 <a href="{% url 'profile' post.user.username %}">
@@ -16,4 +16,17 @@
     {% empty %}
         <h5>No posts</h5>
     {% endfor %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Previous </a>
+        {% endif %}
+        <span>
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"> Next</a>
+        {% endif %}
+    </div>
+
 {% endblock %}
