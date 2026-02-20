@@ -4,9 +4,31 @@ document.addEventListener("DOMContentLoaded", () => {
             edit(this.dataset.id);
         });
     });
-    
+    document.querySelectorAll(".like-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            like(this.dataset.id);
+        });
+    });
 });
 
+function like (post_id) {
+    fetch(`/posts/${post_id}/like`, {
+        method: "PUT",
+    })
+    .then(response => response.json())
+    .then(data => {
+        const button = document.querySelector(`.like-btn[data-id="${post_id}"]`);
+        const count = document.querySelector(`#likes-${post_id}`);
+
+        count.textContent = `${data.likes_count} likes`;
+
+        if (data.liked) {
+            button.textContent = "Unlike";
+        } else {
+            button.textContent = "Like";
+        }
+    })
+}
 
 function edit (post_id) {
     const original = document.querySelector(`#content-${post_id}`).innerHTML;

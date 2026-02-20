@@ -7,6 +7,8 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
 
 from .models import User, Post
 
@@ -57,14 +59,23 @@ def profile(request, username):
         "is_following": is_following
     })
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
+@csrf_exempt
+@login_required
+def like (request, post_id):
+    post = Post.objects.get(id=post_id)
+    if request.method == "PUT" and request.user != post.user:
+        if post.likes.filter(id=request.user.id).exists():
+            post.likes.remove(request.user)
+            liked = False
+        else:
+            post.likes.add(request.user)
+            liked = True
+        return JsonResponse({"liked": liked, "likes_count": post.likes.count()}, status=200)
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 @csrf_exempt
 @login_required
 def post(request, post_id):
-
     if request.method == "PUT":
         data = json.loads(request.body)
         new_content = data.get("content")
