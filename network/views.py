@@ -1,10 +1,12 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Post
 
@@ -43,7 +45,7 @@ def profile(request, username):
         return redirect("profile", username=username)
 
     posts = Post.objects.filter(user = profile_user).order_by("-created_at")
-    paginator = Paginator(posts, 5)  #change it to 10 later
+    paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     is_following = False
@@ -55,6 +57,25 @@ def profile(request, username):
         "is_following": is_following
     })
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+@login_required
+def post(request, post_id):
+
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        new_content = data.get("content")
+
+        post = Post.objects.get(id=post_id)
+        post.content = new_content
+        post.save()
+
+        return JsonResponse({"message": "Post updated"}, status=200)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 def login_view(request):
     if request.method == "POST":

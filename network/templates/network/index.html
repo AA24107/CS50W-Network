@@ -9,9 +9,20 @@
                     <strong>@{{ post.user.username }}</strong>
                 </a>
             </h4>
-            <h6>{{post.content}}</h6>
+            <h6 id="content-{{post.id}}">{{post.content}}</h6>
             <h5>{{post.likes.count}} likes</h5>
             <p>{{post.created_at}}</p>
+            <div>
+                {% if user != post.user %}
+                <button class="like-btn" data-id="{{post.id}}">
+                    Like
+                </button>
+                {% else %}
+                <button data-id="{{ post.id }}" class="edit-btn">
+                    Edit
+                </button>
+                {% endif %}
+            </div>
         </div>
     {% empty %}
         <h5>No posts</h5>
