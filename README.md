@@ -62,7 +62,7 @@ This project was built as part of Harvard’s CS50W (Web Programming with Python
 1. Clone the repository:
 
    ```bash
-   git clone <your-repo-url>
+   git clone (https://github.com/AA24107/CS50W-Network)
    cd network
    ```
 
